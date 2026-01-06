@@ -16,9 +16,7 @@ const StreamDetailPage = () => {
         <button onClick={() => router.push("/")} className={styles.back}>
           ← Back to Streams
         </button>
-
         <h2 className={styles.title}>Morning Radio Show</h2>
-
         <div className={styles.playerWrapper}>
           <iframe
             title="Live Stream"
@@ -28,7 +26,6 @@ const StreamDetailPage = () => {
             className={styles.player}
           />
         </div>
-
         <div className={styles.meta}>
           <span>
             Status: <strong className={styles.statusLive}>LIVE</strong>
