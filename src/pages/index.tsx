@@ -1,13 +1,21 @@
+import { useQuery } from "@tanstack/react-query";
+
 import Header from "@/components/Header";
 import StreamCard from "@/components/StreamCard";
+
+import { fetchStreams, Stream } from "@/lib/api";
 
 import styles from "../styles/Home.module.scss";
 
 export default function Home() {
-  const mockStreams = [
-    { id: "1", name: "Morning Radio", status: "LIVE", viewers: 128 },
-    { id: "2", name: "Evening Talk", status: "OFFLINE" },
-  ] as const;
+  const {
+    data: streams,
+    isLoading,
+    isError,
+  } = useQuery<Stream[]>({
+    queryKey: ["streams"],
+    queryFn: fetchStreams,
+  });
 
   return (
     <div className={styles.page}>
@@ -16,11 +24,13 @@ export default function Home() {
       <main className={styles.main}>
         <h2>Live Streams</h2>
 
-        <div className={styles.streamList}>
-          {mockStreams.map((stream) => (
-            <StreamCard key={stream.id} {...stream} />
-          ))}
-        </div>
+        {streams && (
+          <div className={styles.streamList}>
+            {streams.map((stream) => (
+              <StreamCard key={stream.id} {...stream} />
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );
