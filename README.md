@@ -1,40 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# StreamPulse
 
-## Getting Started
+A production-style live streaming dashboard that tracks realtime viewers using WebSockets and Redis, and persists analytics snapshots in PostgreSQL.
 
-First, run the development server:
+## Why This Project
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+I wanted to design a system similar to real media/streaming platforms that require:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Realtime viewer tracking
+- Horizontal scalability
+- Shared state across multiple servers
+- Cloud-ready infrastructure
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Features
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+- Realtime viewer counts via WebSockets
+- Redis-backed shared state (no in-memory coupling)
+- Periodic analytics snapshots to PostgreSQL
+- Dockerized backend
+- CI pipeline that builds and publishes images to AWS ECR
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## Architecture Overview
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Frontend: Next.js (SSR/SEO-ready)
+- Backend: Node.js + Express
+- Realtime: WebSockets
+- Cache: Redis
+- Database: PostgreSQL
+- Containerization: Docker
+- CI/CD: GitHub Actions → AWS ECR
 
-## Learn More
+## Data Flow
 
-To learn more about Next.js, take a look at the following resources:
+1. Client connects via WebSocket
+2. Viewer count updated atomically in Redis
+3. Backend broadcasts updated counts
+4. Periodic snapshots persisted to PostgreSQL
+5. Analytics can be queried historically
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+## Scaling Strategy
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Stateless backend containers
+- Shared state stored in Redis
+- Compatible with AWS ALB + ECS/EC2
+- No code changes required to scale horizontally
 
-## Deploy on Vercel
+## CI/CD
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- GitHub Actions builds Docker images on every push
+- Images are pushed to AWS ECR
+- Secrets handled via scoped IAM credentials
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+## Future Improvements
+
+- Add automated tests to CI
+- Deploy backend to ECS
+- Add historical analytics visualizations
+- Add authentication for private streams
